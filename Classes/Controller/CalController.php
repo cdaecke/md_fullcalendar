@@ -17,6 +17,7 @@ namespace Mediadreams\MdFullcalendar\Controller;
 use HDNET\Calendarize\Domain\Repository\IndexRepository;
 use Mediadreams\MdFullcalendar\Domain\Repository\CategoryRepository;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -94,20 +95,29 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     public function listAction(): ResponseInterface
     {
-        $type = GeneralUtility::_GP('type');
-        $storagePid = GeneralUtility::_GP('storage');
+        $params = $this->getRequest()->getQueryParams();
+
+        $type = $params['type'];
+        $storagePid = $params['storage'];
 
         // set start day -1 in order to get all events for selected time span
-        $selectedStart = new \DateTime(GeneralUtility::_GP('start'));
+        $selectedStart = new \DateTime($params['start']);
         $selectedStart = $selectedStart
             ->modify('-1 day')
             ->setTime(00, 00, 00);
 
         // set end day +1 in order to get all events for selected time span
-        $selectedEnd = new \DateTime(GeneralUtility::_GP('end'));
+        $selectedEnd = new \DateTime($params['end']);
         $selectedEnd = $selectedEnd
             ->modify('+1 day')
             ->setTime(23, 59, 59);
+
+        // Limit the timespan between start and end date to max 50 days in order to prevent Denial of Service attacks
+        $daysTimespan = $selectedStart->diff($selectedEnd);
+        if ($daysTimespan->format('%a') >= 50) {
+            $selectedEnd = clone $selectedStart;
+            $selectedEnd = $selectedEnd->modify("+50 days");
+        }
 
         if (!empty($storagePid)) {
             // sanitize input
@@ -189,9 +199,7 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
                 }
             }
 
-            header('Content-Type: application/json');
-            echo json_encode($items);
-            exit;
+            return $this->jsonResponse(json_encode($items));
         } else {
             $this->view->assign('index', $search);
         }
@@ -212,12 +220,20 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
+     * @return ServerRequestInterface
+     */
+    protected function getRequest(): ServerRequestInterface
+    {
+        return $GLOBALS['TYPO3_REQUEST'];
+    }
+
+    /**
      * This function returns a string with all CSS classes of an item
      *
      * @param $categories The ObjectStorage with the categories
      * @return string
      */
-    private function getCssClasses($categories)
+    protected function getCssClasses($categories)
     {
         $cssClasses = '';
 

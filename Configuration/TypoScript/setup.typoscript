@@ -27,16 +27,16 @@ plugin.tx_mdfullcalendar_cal {
     }
 
     settings {
-        dateFormat = d.m.Y
-        timeFormat = H:i
+        dateFormat = {$plugin.tx_mdfullcalendar_cal.settings.dateFormat}
+        timeFormat = {$plugin.tx_mdfullcalendar_cal.settings.timeFormat}
 
         pid {
-            defaultDetailPid =
+            defaultDetailPid = {$plugin.tx_mdfullcalendar_cal.settings.pid.defaultDetailPid}
         }
 
         # if you enable this, make sure that you have set "defaultDetailPid" and there is a
         # ext:calendarize plugin inserted on that page.
-        showIcsIcalButton = 0
+        showIcsIcalButton = {$plugin.tx_mdfullcalendar_cal.settings.showIcsIcalButton}
     }
 }
 

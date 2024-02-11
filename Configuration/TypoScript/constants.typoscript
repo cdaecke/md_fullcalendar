@@ -13,4 +13,17 @@ plugin.tx_mdfullcalendar_cal {
         # cat=plugin.tx_mdfullcalendar_cal//a; type=string; label=Default storage PID
         storagePid =
     }
+
+    settings {
+        dateFormat = d.m.Y
+        timeFormat = H:i
+
+        pid {
+            defaultDetailPid =
+        }
+
+        # if you enable this, make sure that you have set "defaultDetailPid" and there is a
+        # ext:calendarize plugin inserted on that page.
+        showIcsIcalButton = 0
+    }
 }

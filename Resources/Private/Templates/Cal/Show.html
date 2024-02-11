@@ -35,6 +35,11 @@
 
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
+                if ('undefined' === typeof window.jQuery) {
+                    document.getElementById('calendar<f:format.raw>{contentObject.uid}</f:format.raw>').innerHTML = "Missing jQuery.";
+                    return;
+                }
+
                 var calendarEl<f:format.raw>{contentObject.uid}</f:format.raw> = document.getElementById('calendar<f:format.raw>{contentObject.uid}</f:format.raw>'),
                     calModal = $('#calModal<f:format.raw>{contentObject.uid}</f:format.raw>'),
                     filtersActive = $('#categoryFilter<f:format.raw>{contentObject.uid}</f:format.raw>').length;
@@ -92,8 +97,13 @@
                                     success: function(result){
                                         calModal.find('.modal-content-inner').html(result);
                                         calModal.modal('show');
+                                    },
+                                    error: function(result) {
+                                        alert('An error occurred. Please try again.');
+                                    },
+                                    complete: function() {
                                         $(document.body).css({'cursor' : ''});
-                                    }
+                                    },
                                 });
                             });
                         }
