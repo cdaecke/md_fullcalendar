@@ -81,8 +81,7 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         }
 
         $this->view->assignMultiple([
-            'contentObject' => $contentObject,
-            'sitePath' => $this->request->getAttribute('normalizedParams')->getSitePath()
+            'contentObject' => $contentObject
         ]);
         return $this->htmlResponse();
     }
@@ -101,13 +100,13 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $storagePid = $params['storage'];
 
         // set start day -1 in order to get all events for selected time span
-        $selectedStart = new \DateTime($params['start']);
+        $selectedStart = new \DateTime($_POST['start']);
         $selectedStart = $selectedStart
             ->modify('-1 day')
             ->setTime(00, 00, 00);
 
         // set end day +1 in order to get all events for selected time span
-        $selectedEnd = new \DateTime($params['end']);
+        $selectedEnd = new \DateTime($_POST['end']);
         $selectedEnd = $selectedEnd
             ->modify('+1 day')
             ->setTime(23, 59, 59);

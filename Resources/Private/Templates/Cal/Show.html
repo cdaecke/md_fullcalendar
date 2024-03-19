@@ -57,12 +57,8 @@
                     navLinks: true,
                     fixedWeekCount: false,
                     /* showNonCurrentDates: false, */ /* In month view, whether dates in the previous or next month should be rendered at all. */
-                    events: {
-                        url: '<f:format.raw>{sitePath}</f:format.raw>index.php?id=<f:format.raw>{contentObject.pid}</f:format.raw>&type=1573738558&storage=<f:format.raw>{storagePid}</f:format.raw>',
-                        method: 'POST',
-                        failure: function(request, status, error) {
-                            alert('There was an error while fetching events!');
-                        },
+                    events: function(info, successCallback, failureCallback) {
+                        getEvents(info, successCallback, failureCallback); 
                     },
                     eventDidMount: function(item) {
                         /* add title attribute */
@@ -110,6 +106,39 @@
                         }
                     },
                 });
+
+                function getEvents(info, successCallback, failureCallback) {
+                    let eventsUrl = '<f:format.raw><f:uri.page pageUid="<f:format.raw>{contentObject.pid}</f:format.raw>" pageType='1573738558' additionalParams="{storage: '{storagePid}'}" /></f:format.raw>';
+
+                    $.ajax({
+                        url: eventsUrl,
+                        method: 'POST',
+                        data: {
+                            start: info.startStr,
+                            end: info.endStr
+                        },
+                        success: function(result, response){
+                            var events = result.map(function(eventEl) {
+                                return {
+                                    id: eventEl.id,
+                                    title: eventEl.title,
+                                    description: eventEl.description,
+                                    start: eventEl.start,
+                                    end: eventEl.end,
+                                    allDay: eventEl.allDay,
+                                    className: eventEl.className,
+                                    url: eventEl.url,
+                                    uriAjax: eventEl.uriAjax
+                                }
+                            })
+                            
+                            successCallback(events);
+                        },
+                        error: function(jqXHR, exception) {
+                            alert('There was an error while fetching events!');
+                        }
+                    });
+                }
 
                 /* render calendar */
                 calendar<f:format.raw>{contentObject.uid}</f:format.raw>.render();
