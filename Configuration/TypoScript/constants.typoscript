@@ -15,15 +15,18 @@ plugin.tx_mdfullcalendar_cal {
     }
 
     settings {
+        # cat=plugin.tx_mdfullcalendar_cal/settings/dateFormat; type=string; label=The format of the dates.
         dateFormat = d.m.Y
+
+        # cat=plugin.tx_mdfullcalendar_cal/settings/timeFormat; type=string; label=The format of the time.
         timeFormat = H:i
 
         pid {
+            # cat=plugin.tx_mdfullcalendar_cal/settings/pid/defaultDetailPid; type=int+; label=The Id of the page, where the detail view of an item is shown. On this page you have to insert the plugin `
             defaultDetailPid =
         }
 
-        # if you enable this, make sure that you have set "defaultDetailPid" and there is a
-        # ext:calendarize plugin inserted on that page.
+        # cat=plugin.tx_mdfullcalendar_cal/settings/timeFormat; type=boolean; label=Show the Ical download button. if you enable this, make sure that you have set "defaultDetailPid" and there is an ext:calendarize plugin inserted on that page.
         showIcsIcalButton = 0
     }
 }
