@@ -1,3 +1,10 @@
+Version 4.0.0 (2024-00-20)
+    [FEATURE] TYPO3 v12 compatibility
+    Some improvments
+
+    All changes
+    https://github.com/cdaecke/md_fullcalendar/compare/3.0.2...4.0.0
+
 Version 3.0.2 (2022-11-09)
     [FEATURE] show entries of ext:news in calendar (ext:calendarize_news)
 
