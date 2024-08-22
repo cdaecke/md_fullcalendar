@@ -1,3 +1,9 @@
+Version 4.0.1 (2024-08-22)
+    [BUGFIX] Get start- and end date correctly
+
+    All changes
+    https://github.com/cdaecke/md_fullcalendar/compare/4.0.0...4.0.1
+
 Version 4.0.0 (2024-00-20)
     [FEATURE] TYPO3 v12 compatibility
     Some improvments
