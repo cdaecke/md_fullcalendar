@@ -40,6 +40,10 @@ plugin.tx_mdfullcalendar_cal {
     }
 }
 
+// Use default configuration for all plugins
+plugin.tx_mdfullcalendar_callist < plugin.tx_mdfullcalendar_cal
+plugin.tx_mdfullcalendar_caldetail < plugin.tx_mdfullcalendar_cal
+
 page {
     includeCSS {
         mdFullcalendar = EXT:md_fullcalendar/Resources/Public/fullcalendar/lib/main.min.css
