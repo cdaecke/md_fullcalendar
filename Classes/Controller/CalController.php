@@ -47,10 +47,15 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     public function showAction(): ResponseInterface
     {
+        $this->assetCollector->addJavaScript(
+            'md_fullcalendar_lib',
+            'EXT:md_fullcalendar/Resources/Public/fullcalendar/dist/index.global.min.js'
+        );
+
         if (!empty($this->settings['language'])) {
             $this->assetCollector->addJavaScript(
                 'md_fullcalendar_locales',
-                'EXT:md_fullcalendar/Resources/Public/fullcalendar/lib/locales/' . $this->settings['language'] . '.js'
+                'EXT:md_fullcalendar/Resources/Public/fullcalendar/packages/core/locales/' . $this->settings['language'] . '.global.js'
             );
         }
 
