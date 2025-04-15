@@ -22,8 +22,8 @@ Detail view:
 
 ## Requirements
 
-- TYPO3 >= 11.5
-- ext:calendarize >= 12.0
+- TYPO3 >= 12.4
+- ext:calendarize >= 13.0
 
 ## Installation
 
