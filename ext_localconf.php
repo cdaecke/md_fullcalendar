@@ -44,13 +44,5 @@ call_user_func(
             ]
         );
 
-        $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
-        
-        $iconRegistry->registerIcon(
-            'md_fullcalendar-plugin-cal',
-            \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
-            ['source' => 'EXT:md_fullcalendar/Resources/Public/Icons/PluginCal.svg']
-        );
-        
     }
 );
