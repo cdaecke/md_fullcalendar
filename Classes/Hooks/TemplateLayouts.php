@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mediadreams\MdFullcalendar\Hooks;
@@ -24,9 +25,9 @@ class TemplateLayouts
     /**
      * Itemsproc function to extend the selection of templateLayouts in the plugin
      *
-     * @param array $config Configuration array
+     * @param array &$config Configuration array
      */
-    public function getTemplateLayouts(array &$config)
+    public function getTemplateLayouts(array &$config): void
     {
         $templateLayouts = $this->getTemplateLayoutsFromTsConfig($config['flexParentDatabaseRow']['pid']);
         foreach ($templateLayouts as $index => $layout) {
@@ -34,7 +35,7 @@ class TemplateLayouts
                 $GLOBALS['LANG']->sL($layout),
                 $index
             ];
-            array_push($config['items'], $additionalLayout);
+            $config['items'][] = $additionalLayout;
         }
     }
 
@@ -45,7 +46,7 @@ class TemplateLayouts
      *
      * @return array
      */
-    protected function getTemplateLayoutsFromTsConfig(int $pageUid)
+    protected function getTemplateLayoutsFromTsConfig(int $pageUid): array
     {
         $templateLayouts = [];
         $pagesTsConfig = BackendUtility::getPagesTSconfig($pageUid);

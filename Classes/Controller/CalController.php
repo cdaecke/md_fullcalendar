@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mediadreams\MdFullcalendar\Controller;
@@ -17,10 +18,9 @@ namespace Mediadreams\MdFullcalendar\Controller;
 use HDNET\Calendarize\Domain\Repository\IndexRepository;
 use Mediadreams\MdFullcalendar\Domain\Repository\CategoryRepository;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Page\AssetCollector;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
  * CalController
@@ -28,27 +28,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
     /**
-     * @var IndexRepository
-     */
-    protected $indexRepository;
-
-    /**
-     * @var CategoryRepository
-     */
-    protected $categoryRepository;
-
-    /**
      * CalController constructor
      *
      * @param IndexRepository $indexRepository
      * @param CategoryRepository $categoryRepository
      */
     public function __construct(
-        IndexRepository $indexRepository,
-        CategoryRepository $categoryRepository
+        protected IndexRepository $indexRepository,
+        protected CategoryRepository $categoryRepository,
+        protected AssetCollector $assetCollector,
     ) {
-        $this->indexRepository = $indexRepository;
-        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -59,8 +48,10 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     public function showAction(): ResponseInterface
     {
         if (!empty($this->settings['language'])) {
-            $pageRender = GeneralUtility::makeInstance(PageRenderer::class);
-            $pageRender->addJsFooterFile('EXT:md_fullcalendar/Resources/Public/fullcalendar/lib/locales/' . $this->settings['language'] . '.js');
+            $this->assetCollector->addJavaScript(
+                'md_fullcalendar_locales',
+                'EXT:md_fullcalendar/Resources/Public/fullcalendar/lib/locales/' . $this->settings['language'] . '.js'
+            );
         }
 
         if (!empty($this->settings['category'])) {
@@ -69,20 +60,15 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         }
 
         // pass storagePid to template in order to use it in ajax call listAction()
-        // TODO: Remove condition as soon, as TYPO3 v11 is not supported anymore
-        $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
-        $contentObject = ($versionInformation->getMajorVersion() >= 12) ?
-            $this->request->getAttribute('currentContentObject')->data :
-            $this->configurationManager->getContentObject()->data;
+        $contentObject = $this->request->getAttribute('currentContentObject')->data;
 
         $storagePid = $contentObject['pages'];
         if ($storagePid) {
             $this->view->assign('storagePid', $storagePid);
         }
 
-        $this->view->assignMultiple([
-            'contentObject' => $contentObject
-        ]);
+        $this->view->assign('contentObject', $contentObject);
+
         return $this->htmlResponse();
     }
 
@@ -94,7 +80,7 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     public function listAction(): ResponseInterface
     {
-        $params = $this->getRequest()->getQueryParams();
+        $params = $this->request->getQueryParams();
 
         $type = $params['type'];
         $storagePid = $params['storage'];
@@ -210,7 +196,7 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * Get one event
      *
      * @param \HDNET\Calendarize\Domain\Model\Index $index
-     * @return void
+     * @return ResponseInterface
      */
     public function detailAction(\HDNET\Calendarize\Domain\Model\Index $index): ResponseInterface
     {
@@ -219,20 +205,12 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
-     * @return ServerRequestInterface
-     */
-    protected function getRequest(): ServerRequestInterface
-    {
-        return $GLOBALS['TYPO3_REQUEST'];
-    }
-
-    /**
      * This function returns a string with all CSS classes of an item
      *
-     * @param $categories The ObjectStorage with the categories
+     * @param ObjectStorage $categories The ObjectStorage with the categories
      * @return string
      */
-    protected function getCssClasses($categories)
+    protected function getCssClasses(ObjectStorage $categories): string
     {
         $cssClasses = '';
 
