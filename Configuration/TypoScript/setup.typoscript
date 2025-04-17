@@ -44,16 +44,6 @@ plugin.tx_mdfullcalendar_cal {
 plugin.tx_mdfullcalendar_callist < plugin.tx_mdfullcalendar_cal
 plugin.tx_mdfullcalendar_caldetail < plugin.tx_mdfullcalendar_cal
 
-page {
-    includeCSS {
-        mdFullcalendar = EXT:md_fullcalendar/Resources/Public/fullcalendar/lib/main.min.css
-    }
-
-    includeJSFooterlibs {
-        mdFullcalendar = EXT:md_fullcalendar/Resources/Public/fullcalendar/lib/main.min.js
-    }
-}
-
 CALENDAR_AJAX = PAGE
 CALENDAR_AJAX {
     typeNum = 1573738558
