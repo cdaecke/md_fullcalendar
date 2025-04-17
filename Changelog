@@ -1,3 +1,13 @@
+Version 5.0.0 (2025-04-17)
+    [FEATURE] TYPO3 v13 compatibility
+    [TASK] update `fullcalendar.io` (v5.10.2 => v6.1.17)
+
+    Migration from older version
+    If you upgrade from a previous version, please run the upgrade wizard (ext:md_fullcalendar: Update flexform settings).
+
+    All changes
+    https://github.com/cdaecke/md_fullcalendar/compare/4.0.1...5.0.0
+
 Version 4.0.1 (2024-08-22)
     [BUGFIX] Get start- and end date correctly
 
