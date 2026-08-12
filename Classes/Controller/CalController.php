@@ -14,7 +14,7 @@ use TYPO3\CMS\Core\Page\AssetCollector;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-final class CalController extends ActionController
+class CalController extends ActionController
 {
     public function __construct(
         private readonly IndexRepository $indexRepository,
