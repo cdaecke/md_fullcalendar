@@ -17,9 +17,9 @@ namespace Mediadreams\MdFullcalendar\Controller;
 
 use HDNET\Calendarize\Domain\Repository\IndexRepository;
 use Mediadreams\MdFullcalendar\Domain\Repository\CategoryRepository;
+use Mediadreams\MdFullcalendar\Service\EventQueryParser;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Page\AssetCollector;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
@@ -32,11 +32,13 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      *
      * @param IndexRepository $indexRepository
      * @param CategoryRepository $categoryRepository
+     * @param EventQueryParser $eventQueryParser
      */
     public function __construct(
         protected IndexRepository $indexRepository,
         protected CategoryRepository $categoryRepository,
         protected AssetCollector $assetCollector,
+        protected EventQueryParser $eventQueryParser,
     ) {
     }
 
@@ -85,48 +87,31 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     public function listAction(): ResponseInterface
     {
-        $params = $this->request->getQueryParams();
+        $requestBody = $this->request->getParsedBody();
+        $parameters = array_replace(
+            $this->request->getQueryParams(),
+            is_array($requestBody) ? $requestBody : [],
+        );
 
-        $type = $params['type'];
-        $storagePid = $params['storage'];
-
-        // set start day -1 in order to get all events for selected time span
-        $selectedStart = new \DateTime($_REQUEST['start']);
-        $selectedStart = $selectedStart
-            ->modify('-1 day')
-            ->setTime(00, 00, 00);
-
-        // set end day +1 in order to get all events for selected time span
-        $selectedEnd = new \DateTime($_REQUEST['end']);
-        $selectedEnd = $selectedEnd
-            ->modify('+1 day')
-            ->setTime(23, 59, 59);
-
-        // Limit the timespan between start and end date to max 50 days in order to prevent Denial of Service attacks
-        $daysTimespan = $selectedStart->diff($selectedEnd);
-        if ($daysTimespan->format('%a') >= 50) {
-            $selectedEnd = clone $selectedStart;
-            $selectedEnd = $selectedEnd->modify("+50 days");
+        try {
+            $eventQuery = $this->eventQueryParser->parse($parameters);
+        } catch (\InvalidArgumentException) {
+            return $this->jsonResponse(
+                json_encode(['error' => 'Invalid event query.'], JSON_THROW_ON_ERROR),
+            )->withStatus(400);
         }
 
-        if (!empty($storagePid)) {
-            // sanitize input
-            $storagePid = GeneralUtility::intExplode(',', $storagePid, true);
-            $storagePid = implode(',', $storagePid);
-
-            // set storagePid
-            $this->configurationManager->setConfiguration(
-                [
-                    'persistence' => [
-                        'storagePid' => $storagePid
-                    ],
-                ]
-            );
+        if ($eventQuery->storagePageIds !== null) {
+            $this->configurationManager->setConfiguration([
+                'persistence' => [
+                    'storagePid' => implode(',', $eventQuery->storagePageIds),
+                ],
+            ]);
         }
 
-        $search = $this->indexRepository->findByTimeSlot($selectedStart, $selectedEnd);
-
-        if ($type == 1573738558) {
+        $search = $this->indexRepository->findByTimeSlot($eventQuery->start, $eventQuery->end);
+        $type = $parameters['type'] ?? null;
+        if ($type === 1573738558 || $type === '1573738558') {
             $items = [];
             $i = 0;
             /** @var \HDNET\Calendarize\Domain\Model\Index $el */
@@ -189,7 +174,7 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
                 }
             }
 
-            return $this->jsonResponse(json_encode($items));
+            return $this->jsonResponse(json_encode($items, JSON_THROW_ON_ERROR));
         } else {
             $this->view->assign('index', $search);
         }
