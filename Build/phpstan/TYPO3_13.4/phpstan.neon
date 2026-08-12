@@ -1,0 +1,12 @@
+includes:
+  - ../phpstan.neon
+
+parameters:
+  phpVersion: 80200
+
+  # TYPO3 14 adds the seventh FlexForm parameter. The call is guarded by the
+  # runtime major-version check and remains fully analysed in the v14 job.
+  ignoreErrors:
+    -
+      identifier: arguments.count
+      path: ../../../Configuration/TCA/Overrides/tt_content.php

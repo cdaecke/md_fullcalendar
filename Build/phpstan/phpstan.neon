@@ -1,0 +1,86 @@
+includes:
+  - ../../.Build/vendor/spaze/phpstan-disallowed-calls/disallowed-dangerous-calls.neon
+  - ../../.Build/vendor/spaze/phpstan-disallowed-calls/disallowed-execution-calls.neon
+  - ../../.Build/vendor/spaze/phpstan-disallowed-calls/disallowed-insecure-calls.neon
+  - ../../.Build/vendor/spaze/phpstan-disallowed-calls/disallowed-loose-calls.neon
+
+parameters:
+  level: 9
+
+  paths:
+    - ../../Classes
+    - ../../Configuration
+    - ../../Tests
+    - ../../ext_localconf.php
+
+  type_coverage:
+    return_type: 100
+    param_type: 100
+    property_type: 95
+
+  cognitive_complexity:
+    class: 10
+    function: 5
+
+  type_perfect:
+    no_mixed_property: true
+    no_mixed_caller: true
+    null_over_false: true
+    narrow_param: false
+    narrow_return: false
+
+  disallowedFunctionCalls:
+    -
+      function:
+        - 'var_dump()'
+        - 'xdebug_break()'
+        - 'debug()'
+      message: 'Use logging instead or remove debugging calls.'
+    -
+      function: 'header()'
+      message: 'Use the PSR-7 response API instead.'
+
+  disallowedStaticCalls:
+    -
+      method:
+        - 'TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump()'
+        - 'TYPO3\CMS\Core\Utility\DebugUtility::debug()'
+      message: 'Use logging instead or remove debugging calls.'
+
+  disallowedSuperglobals:
+    -
+      superglobal:
+        - '$_GET'
+        - '$_POST'
+        - '$_REQUEST'
+        - '$_FILES'
+        - '$_SERVER'
+      message: 'Use the PSR-7 request API instead.'
+
+  ignoreErrors:
+    -
+      identifier: ergebnis.noParameterPassedByReference
+      path: ../../Classes/Hooks/TemplateLayouts.php
+
+  featureToggles:
+    rawMessageInBaseline: true
+
+  ergebnis:
+    declareStrictTypes:
+      enabled: true
+    final:
+      enabled: false
+    finalInAbstractClass:
+      enabled: true
+    noExtends:
+      enabled: false
+    noIsset:
+      enabled: false
+    noNullableReturnTypeDeclaration:
+      enabled: false
+    noParameterWithContainerTypeDeclaration:
+      enabled: false
+    noParameterWithNullableTypeDeclaration:
+      enabled: false
+    noParameterWithNullDefaultValue:
+      enabled: false
