@@ -21,6 +21,7 @@ use Mediadreams\MdFullcalendar\Service\EventQueryParser;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Page\AssetCollector;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * CalController
@@ -54,23 +55,27 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             'EXT:md_fullcalendar/Resources/Public/fullcalendar/dist/index.global.min.js'
         );
 
-        if (!empty($this->settings['language'])) {
+        $language = $this->settings['language'] ?? '';
+        if (is_string($language) && preg_match('/\A[a-z]{2,3}(?:-[a-z]{2})?\z/D', $language) === 1) {
             $this->assetCollector->addJavaScript(
                 'md_fullcalendar_locales',
-                'EXT:md_fullcalendar/Resources/Public/fullcalendar/packages/core/locales/' . $this->settings['language'] . '.global.js'
+                'EXT:md_fullcalendar/Resources/Public/fullcalendar/packages/core/locales/' . $language . '.global.js'
             );
         }
 
-        if (!empty($this->settings['category'])) {
-            $allCategories = $this->categoryRepository->findByParent($this->settings['category']);
-            $this->view->assign('categories', $allCategories);
+        $categoryUid = (int)($this->settings['category'] ?? 0);
+        if ($categoryUid > 0) {
+            $this->view->assign('categories', $this->categoryRepository->findByParent($categoryUid));
         }
 
         // pass storagePid to template in order to use it in ajax call listAction()
-        $contentObject = $this->request->getAttribute('currentContentObject')->data;
+        $contentObjectRenderer = $this->request->getAttribute('currentContentObject');
+        $contentObject = $contentObjectRenderer instanceof ContentObjectRenderer
+            ? $contentObjectRenderer->data
+            : [];
 
-        $storagePid = $contentObject['pages'];
-        if ($storagePid) {
+        $storagePid = $contentObject['pages'] ?? '';
+        if (is_string($storagePid) && $storagePid !== '') {
             $this->view->assign('storagePid', $storagePid);
         }
 
