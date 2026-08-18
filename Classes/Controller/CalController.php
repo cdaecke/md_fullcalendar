@@ -45,7 +45,7 @@ class CalController extends ActionController
 
         $categoryUid = (int)($this->settings['category'] ?? 0);
         if ($categoryUid > 0) {
-            $this->view->assign('categories', $this->categoryRepository->findByParent($categoryUid));
+            $this->view->assign('categories', $this->categoryRepository->findBy(['parent' => $categoryUid]));
         }
 
         // pass storagePid to template in order to use it in ajax call listAction()
