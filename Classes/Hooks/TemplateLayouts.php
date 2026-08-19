@@ -4,58 +4,74 @@ declare(strict_types=1);
 
 namespace Mediadreams\MdFullcalendar\Hooks;
 
-/**
- * This file is part of the "FullCalendar.io for ext:Calendarize" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * (c) 2022 Christoph Daecke <typo3@mediadreams.org>
- * This class was initially taken from ext:sf_event_mgt. Thanks to Torben Hansen
- */
-
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
- * Class TemplateLayouts
- * @package Mediadreams\MdFullcalendar\Hooks
+ * Adds template layouts configured in Page TSconfig to the plugin's FlexForm selection.
  */
 class TemplateLayouts
 {
     /**
-     * Itemsproc function to extend the selection of templateLayouts in the plugin
+     * Appends valid and translated template layout items to the itemsProcFunc configuration.
      *
-     * @param array &$config Configuration array
+     * @param array<string, mixed> $config
      */
     public function getTemplateLayouts(array &$config): void
     {
-        $templateLayouts = $this->getTemplateLayoutsFromTsConfig($config['flexParentDatabaseRow']['pid']);
-        foreach ($templateLayouts as $index => $layout) {
-            $additionalLayout = [
-                $GLOBALS['LANG']->sL($layout),
-                $index
-            ];
-            $config['items'][] = $additionalLayout;
+        $pageUid = $config['effectivePid'] ?? 0;
+        if (!is_int($pageUid)) {
+            return;
         }
+
+        $items = $config['items'] ?? [];
+        if (!is_array($items)) {
+            return;
+        }
+
+        $languageService = $GLOBALS['LANG'] ?? null;
+        $templateLayouts = $this->getTemplateLayoutsFromTsConfig($pageUid);
+        foreach ($templateLayouts as $index => $layout) {
+            $item = $this->createItem($index, $layout, $languageService);
+            if ($item !== null) {
+                $items[] = $item;
+            }
+        }
+        $config['items'] = $items;
     }
 
     /**
-     * Get template layouts defined in TsConfig
+     * Creates an associative TCA select item for a configured template layout.
      *
-     * @param int $pageUid PageUID
+     * @return array{label: string, value: string}|null
+     */
+    protected function createItem(int|string $index, mixed $layout, mixed $languageService): ?array
+    {
+        if (!is_string($layout)) {
+            return null;
+        }
+
+        return [
+            'label' => $languageService instanceof LanguageService ? $languageService->sL($layout) : $layout,
+            'value' => (string)$index,
+        ];
+    }
+
+    /**
+     * Returns the template layouts configured for the page in Page TSconfig.
      *
-     * @return array
+     * @return array<int|string, mixed>
      */
     protected function getTemplateLayoutsFromTsConfig(int $pageUid): array
     {
-        $templateLayouts = [];
         $pagesTsConfig = BackendUtility::getPagesTSconfig($pageUid);
-        if (isset($pagesTsConfig['tx_mdfullcalendar_cal.']['templateLayouts.']) &&
-            is_array($pagesTsConfig['tx_mdfullcalendar_cal.']['templateLayouts.'])
-        ) {
-            $templateLayouts = $pagesTsConfig['tx_mdfullcalendar_cal.']['templateLayouts.'];
+        $extensionTsConfig = $pagesTsConfig['tx_mdfullcalendar_cal.'] ?? null;
+        if (!is_array($extensionTsConfig)) {
+            return [];
         }
 
-        return $templateLayouts;
+        $templateLayouts = $extensionTsConfig['templateLayouts.'] ?? null;
+
+        return is_array($templateLayouts) ? $templateLayouts : [];
     }
 }
