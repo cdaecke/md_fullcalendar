@@ -15,11 +15,14 @@ namespace Mediadreams\MdFullcalendar\Domain\Repository;
  *
  ***/
 
+use Mediadreams\MdFullcalendar\Domain\Model\Category;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
  * Repository for Category models.
+ *
+ * @extends Repository<Category>
  */
 class CategoryRepository extends Repository
 {
