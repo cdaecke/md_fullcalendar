@@ -1,88 +1,89 @@
-
-plugin.tx_mdfullcalendar_cal {
+plugin {
+  tx_mdfullcalendar_cal {
     view {
-        templateRootPaths.0 = EXT:md_fullcalendar/Resources/Private/Templates/
-        templateRootPaths.1 = {$plugin.tx_mdfullcalendar_cal.view.templateRootPath}
-        partialRootPaths.0 = EXT:md_fullcalendar/Resources/Private/Partials/
-        partialRootPaths.1 = {$plugin.tx_mdfullcalendar_cal.view.partialRootPath}
-        layoutRootPaths.0 = EXT:md_fullcalendar/Resources/Private/Layouts/
-        layoutRootPaths.1 = {$plugin.tx_mdfullcalendar_cal.view.layoutRootPath}
+      templateRootPaths {
+        0 = EXT:md_fullcalendar/Resources/Private/Templates/
+        1 = {$plugin.tx_mdfullcalendar_cal.view.templateRootPath}
+      }
+      partialRootPaths {
+        0 = EXT:md_fullcalendar/Resources/Private/Partials/
+        1 = {$plugin.tx_mdfullcalendar_cal.view.partialRootPath}
+      }
+      layoutRootPaths {
+        0 = EXT:md_fullcalendar/Resources/Private/Layouts/
+        1 = {$plugin.tx_mdfullcalendar_cal.view.layoutRootPath}
+      }
     }
 
     persistence {
-        storagePid = {$plugin.tx_mdfullcalendar_cal.persistence.storagePid}
-        #recursive = 1
+      storagePid = {$plugin.tx_mdfullcalendar_cal.persistence.storagePid}
     }
 
     features {
-        #skipDefaultArguments = 1
-        # if set to 1, the enable fields are ignored in BE context
-        ignoreAllEnableFieldsInBe = 0
-        # Should be on by default, but can be disabled if all action in the plugin are uncached
-        requireCHashArgumentForActionArguments = 1
-    }
-
-    mvc {
-        #callDefaultActionIfActionCantBeResolved = 1
+      # If set to 1, the enable fields are ignored in BE context.
+      ignoreAllEnableFieldsInBe = 0
+      # Should be on by default, but can be disabled if all actions in the plugin are uncached.
+      requireCHashArgumentForActionArguments = 1
     }
 
     settings {
-        dateFormat = {$plugin.tx_mdfullcalendar_cal.settings.dateFormat}
-        timeFormat = {$plugin.tx_mdfullcalendar_cal.settings.timeFormat}
+      dateFormat = {$plugin.tx_mdfullcalendar_cal.settings.dateFormat}
+      timeFormat = {$plugin.tx_mdfullcalendar_cal.settings.timeFormat}
 
-        pid {
-            defaultDetailPid = {$plugin.tx_mdfullcalendar_cal.settings.pid.defaultDetailPid}
-        }
+      pid {
+        defaultDetailPid = {$plugin.tx_mdfullcalendar_cal.settings.pid.defaultDetailPid}
+      }
 
-        # if you enable this, make sure that you have set "defaultDetailPid" and there is a
-        # ext:calendarize plugin inserted on that page.
-        showIcsIcalButton = {$plugin.tx_mdfullcalendar_cal.settings.showIcsIcalButton}
+      # If you enable this, make sure that you have set "defaultDetailPid" and there is an
+      # ext:calendarize plugin inserted on that page.
+      showIcsIcalButton = {$plugin.tx_mdfullcalendar_cal.settings.showIcsIcalButton}
     }
-}
+  }
 
-// Use default configuration for all plugins
-plugin.tx_mdfullcalendar_callist < plugin.tx_mdfullcalendar_cal
-plugin.tx_mdfullcalendar_caldetail < plugin.tx_mdfullcalendar_cal
+  // Use default configuration for all plugins.
+  tx_mdfullcalendar_callist < plugin.tx_mdfullcalendar_cal
+  tx_mdfullcalendar_caldetail < plugin.tx_mdfullcalendar_cal
+}
 
 CALENDAR_AJAX = PAGE
 CALENDAR_AJAX {
-    typeNum = 1573738558
+  typeNum = 1573738558
 
-    config {
-        disableAllHeaderCode = 1
-        xhtml_cleaning = 0
-        debug = 0
-        admPanel = 0
-        additionalHeaders {
-            10 {
-                header = Content-Type: application/json
-                replace = 1
-            }
-        }
+  config {
+    disableAllHeaderCode = 1
+    xhtml_cleaning = 0
+    debug = 0
+    admPanel = 0
+    additionalHeaders {
+      10 {
+        header = Content-Type: application/json
+        replace = 1
+      }
     }
+  }
 
-    10 = USER_INT
-    10 {
-        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
-        extensionName = MdFullcalendar
-        pluginName = CalList
-        vendorName = Mediadreams
+  10 = USER_INT
+  10 {
+    userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+    extensionName = MdFullcalendar
+    pluginName = CalList
+    vendorName = Mediadreams
 
-        settings < plugin.tx_mdfullcalendar_cal.settings
-        persistence.storagePid < plugin.tx_mdfullcalendar_cal.persistence.storagePid
-    }
+    settings < plugin.tx_mdfullcalendar_cal.settings
+    persistence.storagePid < plugin.tx_mdfullcalendar_cal.persistence.storagePid
+  }
 }
 
 CALENDAR_DETAIL_AJAX < CALENDAR_AJAX
 CALENDAR_DETAIL_AJAX {
-    typeNum = 1573760945
+  typeNum = 1573760945
 
-    config.additionalHeaders {
-        10 {
-            header = Content-Type: text/html
-            replace = 1
-        }
+  config.additionalHeaders {
+    10 {
+      header = Content-Type: text/html
+      replace = 1
     }
+  }
 
-    10.pluginName = CalDetail
+  10.pluginName = CalDetail
 }
