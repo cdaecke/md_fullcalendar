@@ -1,0 +1,13 @@
+"pages"
+,"uid","pid","title","slug","TSconfig"
+,1,0,"Page with layouts","/","tx_mdfullcalendar_cal {
+  templateLayouts {
+    10 = Plain layout
+    20 = LLL:EXT:md_fullcalendar/Resources/Private/Language/locallang_db.xlf:tx_md_fullcalendar_cal.name
+    invalid {
+      nested = Nested configuration is ignored
+    }
+  }
+}"
+,2,1,"Page without layouts","/without-layouts",""
+,3,0,"Independent page without layouts","/independent-without-layouts",""
