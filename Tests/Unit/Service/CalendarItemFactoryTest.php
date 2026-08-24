@@ -12,6 +12,7 @@ use Mediadreams\MdFullcalendar\Service\ObjectPropertyReader;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Domain\Model\Category;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -125,7 +126,7 @@ final class CalendarItemFactoryTest extends UnitTestCase
     #[Test]
     public function createMapsNewsTeaserToAbstract(): void
     {
-        $news = new class extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
+        $news = new class extends AbstractEntity {
             public function getTitle(): string
             {
                 return 'News title';
@@ -189,7 +190,7 @@ final class CalendarItemFactoryTest extends UnitTestCase
     }
 
     private function createIndexStub(
-        \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $originalObject,
+        AbstractEntity $originalObject,
         \DateTime $start,
         \DateTime $end,
         bool $allDay,

@@ -16,6 +16,8 @@ final class PluginRegistrationTest extends FunctionalTestCase
     /** @var array<string, mixed> */
     private array $ttContentTca;
 
+    protected array $coreExtensionsToLoad = ['install'];
+
     protected array $testExtensionsToLoad = [
         'lochmueller/calendarize',
         'mediadreams/md_fullcalendar',
@@ -99,7 +101,7 @@ final class PluginRegistrationTest extends FunctionalTestCase
         );
         self::assertIsString($showItem);
 
-        $items = array_map('trim', explode(',', $showItem));
+        $items = array_map(trim(...), explode(',', $showItem));
         $flexFormPosition = array_search('pi_flexform', $items, true);
         self::assertIsInt($flexFormPosition);
         self::assertStringContainsString('plugin', $items[$flexFormPosition - 1] ?? '');

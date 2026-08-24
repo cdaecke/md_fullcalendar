@@ -14,6 +14,8 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 #[CoversClass(CalController::class)]
 final class CalControllerTest extends FunctionalTestCase
 {
+    protected array $coreExtensionsToLoad = ['install'];
+
     protected array $testExtensionsToLoad = [
         'lochmueller/calendarize',
         'mediadreams/md_fullcalendar',

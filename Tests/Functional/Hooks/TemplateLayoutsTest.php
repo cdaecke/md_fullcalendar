@@ -14,6 +14,8 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 #[CoversClass(TemplateLayouts::class)]
 final class TemplateLayoutsTest extends FunctionalTestCase
 {
+    protected array $coreExtensionsToLoad = ['install'];
+
     protected array $testExtensionsToLoad = [
         'lochmueller/calendarize',
         'mediadreams/md_fullcalendar',
