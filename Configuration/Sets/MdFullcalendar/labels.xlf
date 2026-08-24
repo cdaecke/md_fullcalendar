@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:md_fullcalendar/Configuration/Sets/labels.xlf" date="2026-08-24T00:00:00Z" product-name="md_fullcalendar">
+		<header/>
+		<body>
+			<trans-unit id="label" resname="label">
+				<source>FullCalendar.io for ext:Calendarize</source>
+			</trans-unit>
+
+			<trans-unit id="categories.md_fullcalendar" resname="categories.md_fullcalendar">
+				<source>FullCalendar.io for ext:Calendarize</source>
+			</trans-unit>
+			<trans-unit id="categories.md_fullcalendar.templates" resname="categories.md_fullcalendar.templates">
+				<source>Templates</source>
+			</trans-unit>
+
+			<trans-unit id="settings.md_fullcalendar.view.templateRootPath" resname="settings.md_fullcalendar.view.templateRootPath">
+				<source>Path of custom Fluid Templates for the extension</source>
+			</trans-unit>
+			<trans-unit id="settings.md_fullcalendar.view.partialRootPath" resname="settings.md_fullcalendar.view.partialRootPath">
+				<source>Path of custom Fluid Partials for the extension</source>
+			</trans-unit>
+			<trans-unit id="settings.md_fullcalendar.view.layoutRootPath" resname="settings.md_fullcalendar.view.layoutRootPath">
+				<source>Path of custom Fluid Layouts for the extension</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

@@ -1,0 +1,17 @@
+categories:
+  md_fullcalendar: ~
+  md_fullcalendar.templates:
+    parent: md_fullcalendar
+settings:
+  md_fullcalendar.view.templateRootPath:
+    default: ''
+    type: string
+    category: md_fullcalendar.templates
+  md_fullcalendar.view.partialRootPath:
+    default: ''
+    type: string
+    category: md_fullcalendar.templates
+  md_fullcalendar.view.layoutRootPath:
+    default: ''
+    type: string
+    category: md_fullcalendar.templates

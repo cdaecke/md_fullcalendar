@@ -1,0 +1,3 @@
+@import 'EXT:md_fullcalendar/Configuration/TypoScript/constants.typoscript'
+
+plugin.tx_mdfullcalendar_cal.view >
