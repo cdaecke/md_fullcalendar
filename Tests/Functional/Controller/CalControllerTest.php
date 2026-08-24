@@ -7,6 +7,7 @@ namespace Mediadreams\MdFullcalendar\Tests\Functional\Controller;
 use Mediadreams\MdFullcalendar\Controller\CalController;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
@@ -79,14 +80,16 @@ final class CalControllerTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function listActionReturnsBadRequestForInvalidEventQuery(): void
+    public function listActionReturnsErrorForInvalidEventQuery(): void
     {
         $request = (new InternalRequest())->withPageId(1)->withQueryParameter('type', 1573738558);
 
         $response = $this->executeFrontendSubRequest($request);
         $result = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
-        self::assertSame(400, $response->getStatusCode());
+        // TYPO3 v13 does not propagate an Extbase action response status through PAGE rendering.
+        $expectedStatusCode = (new Typo3Version())->getMajorVersion() >= 14 ? 400 : 200;
+        self::assertSame($expectedStatusCode, $response->getStatusCode());
         self::assertSame(['error' => 'Invalid event query.'], $result);
     }
 

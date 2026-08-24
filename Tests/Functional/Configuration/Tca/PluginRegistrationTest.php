@@ -6,14 +6,13 @@ namespace Mediadreams\MdFullcalendar\Tests\Functional\Configuration\Tca;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 #[CoversNothing]
 final class PluginRegistrationTest extends FunctionalTestCase
 {
-    private const PLUGIN_SIGNATURE = 'mdfullcalendar_cal';
-
     /** @var array<string, mixed> */
     private array $ttContentTca;
 
@@ -44,7 +43,7 @@ final class PluginRegistrationTest extends FunctionalTestCase
 
         $pluginItem = null;
         foreach ($items as $item) {
-            if (is_array($item) && ($item['value'] ?? null) === self::PLUGIN_SIGNATURE) {
+            if (is_array($item) && ($item['value'] ?? null) === 'mdfullcalendar_cal') {
                 $pluginItem = $item;
                 break;
             }
@@ -70,7 +69,7 @@ final class PluginRegistrationTest extends FunctionalTestCase
             'md_fullcalendar-plugin-cal',
             ArrayUtility::getValueByPath(
                 $this->ttContentTca,
-                'ctrl/typeicon_classes/' . self::PLUGIN_SIGNATURE,
+                'ctrl/typeicon_classes/mdfullcalendar_cal',
             ),
         );
     }
@@ -78,11 +77,15 @@ final class PluginRegistrationTest extends FunctionalTestCase
     #[Test]
     public function pluginUsesConfiguredFlexForm(): void
     {
+        $flexFormPath = (new Typo3Version())->getMajorVersion() >= 14
+            ? 'types/mdfullcalendar_cal/columnsOverrides/pi_flexform/config/ds'
+            : 'columns/pi_flexform/config/ds/*,mdfullcalendar_cal';
+
         self::assertSame(
             'FILE:EXT:md_fullcalendar/Configuration/FlexForms/CalPlugin.xml',
             ArrayUtility::getValueByPath(
                 $this->ttContentTca,
-                'types/' . self::PLUGIN_SIGNATURE . '/columnsOverrides/pi_flexform/config/ds',
+                $flexFormPath,
             ),
         );
     }
@@ -92,7 +95,7 @@ final class PluginRegistrationTest extends FunctionalTestCase
     {
         $showItem = ArrayUtility::getValueByPath(
             $this->ttContentTca,
-            'types/' . self::PLUGIN_SIGNATURE . '/showitem',
+            'types/mdfullcalendar_cal/showitem',
         );
         self::assertIsString($showItem);
 
