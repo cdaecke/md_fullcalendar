@@ -16,7 +16,7 @@ $pluginIcon = 'md_fullcalendar-plugin-cal';
 $flexForm = 'FILE:EXT:md_fullcalendar/Configuration/FlexForms/CalPlugin.xml';
 
 if ((new Typo3Version())->getMajorVersion() >= 14) {
-    ExtensionUtility::registerPlugin(
+    $pluginSignature = ExtensionUtility::registerPlugin(
         $extensionName,
         $pluginName,
         $pluginTitle,
@@ -24,6 +24,13 @@ if ((new Typo3Version())->getMajorVersion() >= 14) {
         'plugins',
         $pluginDescription,
         $flexForm,
+    );
+
+    ExtensionManagementUtility::addToAllTCAtypes(
+        'tt_content',
+        'pages,recursive',
+        $pluginSignature,
+        'after:pi_flexform',
     );
 } else {
     $pluginSignature = ExtensionUtility::registerPlugin(
@@ -37,7 +44,7 @@ if ((new Typo3Version())->getMajorVersion() >= 14) {
 
     ExtensionManagementUtility::addToAllTCAtypes(
         'tt_content',
-        '--div--;Configuration,pi_flexform,',
+        '--div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:plugin,pi_flexform,pages,recursive',
         $pluginSignature,
         'after:subheader',
     );
