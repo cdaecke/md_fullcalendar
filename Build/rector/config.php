@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\Php82\Rector\Class_\ReadOnlyClassRector;
 use Rector\Renaming\Rector\Name\RenameClassRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector;
 use Ssch\TYPO3Rector\CodeQuality\General\ExtEmConfRector;
+use Ssch\TYPO3Rector\CodeQuality\General\GeneralUtilityMakeInstanceToConstructorPropertyRector;
 use Ssch\TYPO3Rector\Configuration\Typo3Option;
 use Ssch\TYPO3Rector\Set\Typo3LevelSetList;
 use Ssch\TYPO3Rector\Set\Typo3SetList;
@@ -33,11 +35,16 @@ return RectorConfig::configure()
     ->withRules([
         AddVoidReturnTypeWhereNoReturnRector::class,
     ])
-    // These v14-only migrations would break the required TYPO3 13.4 compatibility.
+    // Keep TYPO3 13.4 compatibility and preserve temporary upgrade wizards until support is dropped.
     ->withSkip([
+        GeneralUtilityMakeInstanceToConstructorPropertyRector::class => [__DIR__ . '/../../Classes/Upgrades/FlexformUpgradeWizard.php'],
         MigratePluginContentElementAndPluginSubtypesRector::class => [__DIR__ . '/../../ext_localconf.php'],
+        ReadOnlyClassRector::class => [__DIR__ . '/../../Classes/Upgrades/FlexformUpgradeWizard.php'],
         DropFifthParameterForExtensionUtilityConfigurePluginRector::class => [__DIR__ . '/../../ext_localconf.php'],
-        RenameClassRector::class => [__DIR__ . '/../../Classes/Upgrades/PluginListTypeToCTypeUpdate.php'],
+        RenameClassRector::class => [
+            __DIR__ . '/../../Classes/Upgrades/FlexformUpgradeWizard.php',
+            __DIR__ . '/../../Classes/Upgrades/PluginListTypeToCTypeUpdate.php',
+        ],
     ])
     ->withImportNames(true, true, false)
     ->withConfiguredRule(ExtEmConfRector::class, [
