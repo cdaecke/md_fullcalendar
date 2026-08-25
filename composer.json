@@ -14,11 +14,11 @@
 	"authors": [
 		{
 			"name": "Christoph Daecke",
-			"homepage": "http://www.mediadreams.org",
+			"homepage": "https://www.mediadreams.org",
 			"role": "Developer"
 		}
 	],
-	"homepage": "http://www.mediadreams.org",
+	"homepage": "https://www.mediadreams.org",
 	"support": {
 		"issues": "https://github.com/cdaecke/md_fullcalendar/issues",
 		"source": "https://github.com/cdaecke/md_fullcalendar"
@@ -92,7 +92,7 @@
 				"providesPackages": {}
 			},
 			"extension-key": "md_fullcalendar",
-			"version": "5.0.0",
+			"version": "6.0.0",
 			"web-dir": ".Build/public"
 		}
 	},

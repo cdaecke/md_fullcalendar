@@ -1,3 +1,17 @@
+Version 6.0.0 (2026-08-25)
+    [FEATURE] TYPO3 v14 compatibility
+    [FEATURE] add Tests
+    [TASK] update `fullcalendar.io` (v6.1.17 => v6.1.21)
+
+    [!!!][TASK] Change plugin to content type. -> See `Migration`
+
+    Migration
+    - Run the upgrade wizard `Migrate the FullCalendar plugin to a dedicated content type` after updating.
+    - For upgrades from versions older than 5.0.0, run upgrade wizard `ext:md_fullcalendar: Update flexform settings` as well.
+
+    All changes
+    https://github.com/cdaecke/md_fullcalendar/compare/5.0.0...6.0.0
+
 Version 5.0.0 (2025-04-17)
     [FEATURE] TYPO3 v13 compatibility
     [TASK] update `fullcalendar.io` (v5.10.2 => v6.1.17)

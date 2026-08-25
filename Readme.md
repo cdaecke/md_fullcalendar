@@ -1,5 +1,5 @@
 # TYPO3 Extension ``md_fullcalendar``
- 
+
 This extension brings the Javascript [FullCalendar.io](https://fullcalendar.io/) with switchable views for month, week and day to [ext:calendarize](https://extensions.typo3.org/extension/calendarize/). It is also possible to filter calendars by categories.
 
 In comparison to the Fullcalendar view of ext:calendarize, the shipped plugin of this extension loads the events in the background according to the selected view of the calendar. So you can switch between the month-, week- and day view without reloading the page.
@@ -22,8 +22,9 @@ Detail view:
 
 ## Requirements
 
-- TYPO3 >= 12.4
-- ext:calendarize >= 13.0
+- PHP 8.2-8.5
+- TYPO3 13.4 or 14.3
+- ext:calendarize 15.x
 
 ## Installation
 
@@ -33,9 +34,9 @@ Detail view:
     - `settings.dateFormat`: The format of the dates. Default: `d.m.Y`
     - `settings.timeFormat`: The format of the time. Default: `H:i`
     - `settings.pid.defaultDetailPid`: The Id of the page, where the detail view of an item is shown. On this page you have to insert the plugin `Calendar` of `ext:calendarize` with either `List + Detail` or `Detail only` mode.
-    - `settings.showIcsIcalButton`: Flag for showing a button to download the event for inserting it into your own calendar  
+    - `settings.showIcsIcalButton`: Flag for showing a button to download the event for inserting it into your own calendar
     - `persistence.storagePid`: Make sure to set the storagePid to the Pid, where the records of ext:calendarize are stored! Otherwise you can set the `Record Storage Page` individually in the plugin.
-- for TYPO3 >= 9 add following routeEnhancer:
+- Add the following route enhancer:
 
 ```yaml
 routeEnhancers:
