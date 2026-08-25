@@ -1,0 +1,6 @@
+"tx_calendarize_domain_model_event"
+,"uid","pid","title","abstract","description"
+,1,1,"Functional test event","Rendered abstract",""
+"tx_calendarize_domain_model_index"
+,"uid","pid","unique_register_key","foreign_table","foreign_uid","start_date","end_date","start_time","end_time","all_day","state"
+,1,1,"Event","tx_calendarize_domain_model_event",1,"2026-08-24","2026-08-24",36000,39600,0,""

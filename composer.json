@@ -1,40 +1,148 @@
 {
-    "name": "mediadreams/md_fullcalendar",
-    "type": "typo3-cms-extension",
-    "description": "This extension brings the FullCalendar.io with switchable views for month, week and day to ext:calendarize. It is also possible to filter calendars by categories.",
-    "license": "GPL-2.0-or-later",
-    "keywords": [
-        "TYPO3",
-        "extension",
-        "calendar",
-        "fullcalendar",
-        "cal",
-        "time"
-    ],
-    "homepage": "http://www.mediadreams.org",
-    "authors": [
-        {
-            "name": "Christoph Daecke",
-            "role": "Developer",
-            "homepage": "http://www.mediadreams.org"
-        }
-    ],
-    "support": {
-        "issues": "https://github.com/cdaecke/md_fullcalendar/issues",
-        "source": "https://github.com/cdaecke/md_fullcalendar"
-    },
-    "require": {
-        "typo3/cms-core": "^12.4 || ^13.4",
-        "lochmueller/calendarize": "^13.0 || ^14.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Mediadreams\\MdFullcalendar\\": "Classes"
-        }
-    },
-    "extra": {
-        "typo3/cms": {
-            "extension-key": "md_fullcalendar"
-        }
-   }
+	"name": "mediadreams/md_fullcalendar",
+	"description": "This extension brings the FullCalendar.io with switchable views for month, week and day to ext:calendarize. It is also possible to filter calendars by categories.",
+	"license": "GPL-2.0-or-later",
+	"type": "typo3-cms-extension",
+	"keywords": [
+		"TYPO3",
+		"extension",
+		"calendar",
+		"fullcalendar",
+		"cal",
+		"time"
+	],
+	"authors": [
+		{
+			"name": "Christoph Daecke",
+			"homepage": "http://www.mediadreams.org",
+			"role": "Developer"
+		}
+	],
+	"homepage": "http://www.mediadreams.org",
+	"support": {
+		"issues": "https://github.com/cdaecke/md_fullcalendar/issues",
+		"source": "https://github.com/cdaecke/md_fullcalendar"
+	},
+	"require": {
+		"php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+		"lochmueller/calendarize": "^15.0",
+		"typo3/cms-backend": "^13.4.31 || ^14.3.3",
+		"typo3/cms-core": "^13.4.31 || ^14.3.3",
+		"typo3/cms-extbase": "^13.4.31 || ^14.3.3",
+		"typo3/cms-fluid": "^13.4.31 || ^14.3.3",
+		"typo3/cms-frontend": "^13.4.31 || ^14.3.3",
+		"typo3/cms-install": "^13.4.31 || ^14.3.3"
+	},
+	"require-dev": {
+		"a9f/typo3-fractor": "0.5.11",
+		"ergebnis/composer-normalize": "2.52.0",
+		"ergebnis/phpstan-rules": "2.13.1",
+		"friendsofphp/php-cs-fixer": "3.95.18",
+		"helmich/typo3-typoscript-lint": "3.3.0",
+		"php-parallel-lint/php-parallel-lint": "1.4.0",
+		"phpstan/extension-installer": "1.4.3",
+		"phpstan/phpstan": "2.2.8",
+		"phpstan/phpstan-phpunit": "2.0.18",
+		"phpstan/phpstan-strict-rules": "2.0.12",
+		"phpunit/phpunit": "11.5.56",
+		"rector/type-perfect": "2.2.0",
+		"saschaegerer/phpstan-typo3": "2.2.0 || 3.1.0",
+		"seld/jsonlint": "1.12.1",
+		"spaze/phpstan-disallowed-calls": "4.14.0",
+		"ssch/typo3-rector": "3.14.4",
+		"symfony/config": "^7.4",
+		"symfony/console": "^7.4",
+		"symfony/finder": "^7.4",
+		"symfony/translation": "^7.4",
+		"symfony/yaml": "^7.4",
+		"tomasvotruba/cognitive-complexity": "1.1.1",
+		"tomasvotruba/type-coverage": "2.2.1",
+		"typo3/coding-standards": "0.9.0",
+		"typo3/testing-framework": "9.6.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"Mediadreams\\MdFullcalendar\\": "Classes/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Mediadreams\\MdFullcalendar\\Tests\\": "Tests/"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"a9f/fractor-extension-installer": true,
+			"ergebnis/composer-normalize": true,
+			"phpstan/extension-installer": true,
+			"typo3/class-alias-loader": true,
+			"typo3/cms-composer-installers": true
+		},
+		"bin-dir": ".Build/bin",
+		"lock": false,
+		"preferred-install": {
+			"*": "dist"
+		},
+		"sort-packages": true,
+		"vendor-dir": ".Build/vendor"
+	},
+	"extra": {
+		"typo3/cms": {
+			"Package": {
+				"providesPackages": {}
+			},
+			"extension-key": "md_fullcalendar",
+			"version": "5.0.0",
+			"web-dir": ".Build/public"
+		}
+	},
+	"scripts": {
+		"check:composer:normalize": "@composer normalize --no-check-lock --dry-run",
+		"check:composer:psr-verify": "@composer dumpautoload --optimize --strict-psr --no-plugins",
+		"check:json:lint": "find . ! -path '*/.cache/*' ! -path '*/.Build/*' -name '*.json' | xargs -r php .Build/bin/jsonlint -q",
+		"check:php": [
+			"@check:php:lint",
+			"@check:php:cs-fixer",
+			"@check:php:rector",
+			"@check:php:fractor"
+		],
+		"check:php:cs-fixer": "php-cs-fixer fix --config ./Build/php-cs-fixer/config.php -v --dry-run --diff",
+		"check:php:fractor": "fractor process --dry-run --config=./Build/fractor/config.php",
+		"check:php:lint": "parallel-lint *.php Build Classes Configuration Tests",
+		"check:php:rector": "rector process --dry-run --config=./Build/rector/config.php",
+		"check:phpstan:13": "phpstan analyse -c Build/phpstan/TYPO3_13.4/phpstan.neon --no-progress --memory-limit 4G",
+		"check:phpstan:14": "phpstan analyse -c Build/phpstan/TYPO3_14.3/phpstan.neon --no-progress --memory-limit 4G",
+		"check:tests:functional": "phpunit -c Build/phpunit/FunctionalTests.xml",
+		"check:tests:unit": "phpunit -c Build/phpunit/UnitTests.xml",
+		"check:typoscript:lint": "typoscript-lint -c Build/typoscript-lint/config.yml --ansi -n --fail-on-warnings -vvv Configuration/TypoScript",
+		"check:xliff:lint": "php Build/Scripts/checkIntegrityXliff.php",
+		"check:yaml:lint": "find . ! -path '*.Build/*' \\( -name '*.yaml' -o -name '*.yml' \\) | xargs -r php .Build/bin/yaml-lint",
+		"fix:composer:normalize": "@composer normalize --no-check-lock",
+		"fix:php": [
+			"@fix:php:rector",
+			"@fix:php:fractor",
+			"@fix:php:cs-fixer"
+		],
+		"fix:php:cs-fixer": "php-cs-fixer fix --config ./Build/php-cs-fixer/config.php",
+		"fix:php:fractor": "fractor process --config=./Build/fractor/config.php",
+		"fix:php:rector": "rector process --config=./Build/rector/config.php"
+	},
+	"scripts-descriptions": {
+		"check:composer:normalize": "Checks whether composer.json is normalized.",
+		"check:composer:psr-verify": "Verifies PSR-4 namespace correctness.",
+		"check:json:lint": "Lints JSON files.",
+		"check:php": "Runs the PHP syntax, style and migration dry-runs.",
+		"check:php:cs-fixer": "Checks the TYPO3 coding standards.",
+		"check:php:fractor": "Checks non-PHP files for TYPO3 v14 migrations.",
+		"check:php:lint": "Checks all PHP files for syntax errors.",
+		"check:php:rector": "Checks PHP files for TYPO3 v14 migrations.",
+		"check:phpstan:13": "Runs PHPStan against TYPO3 13.4.",
+		"check:phpstan:14": "Runs PHPStan against TYPO3 14.3.",
+		"check:tests:functional": "Runs the functional tests.",
+		"check:tests:unit": "Runs the unit tests.",
+		"check:typoscript:lint": "Lints TypoScript files.",
+		"check:xliff:lint": "Validates XLIFF files.",
+		"check:yaml:lint": "Lints YAML files.",
+		"fix:php": "Runs all automatic PHP and configuration fixers."
+	}
 }

@@ -1,32 +1,31 @@
-
 plugin.tx_mdfullcalendar_cal {
-    view {
-        # cat=plugin.tx_mdfullcalendar_cal/file; type=string; label=Path to template root (FE)
-        templateRootPath = EXT:md_fullcalendar/Resources/Private/Templates/
-        # cat=plugin.tx_mdfullcalendar_cal/file; type=string; label=Path to template partials (FE)
-        partialRootPath = EXT:md_fullcalendar/Resources/Private/Partials/
-        # cat=plugin.tx_mdfullcalendar_cal/file; type=string; label=Path to template layouts (FE)
-        layoutRootPath = EXT:md_fullcalendar/Resources/Private/Layouts/
+  view {
+    # cat=plugin.tx_mdfullcalendar_cal/file; type=string; label=Path to template root (FE)
+    templateRootPath = EXT:md_fullcalendar/Resources/Private/Templates/
+    # cat=plugin.tx_mdfullcalendar_cal/file; type=string; label=Path to template partials (FE)
+    partialRootPath = EXT:md_fullcalendar/Resources/Private/Partials/
+    # cat=plugin.tx_mdfullcalendar_cal/file; type=string; label=Path to template layouts (FE)
+    layoutRootPath = EXT:md_fullcalendar/Resources/Private/Layouts/
+  }
+
+  persistence {
+    # cat=plugin.tx_mdfullcalendar_cal//a; type=string; label=Default storage PID
+    storagePid =
+  }
+
+  settings {
+    # cat=plugin.tx_mdfullcalendar_cal/settings/dateFormat; type=string; label=The format of the dates.
+    dateFormat = d.m.Y
+
+    # cat=plugin.tx_mdfullcalendar_cal/settings/timeFormat; type=string; label=The format of the time.
+    timeFormat = H:i
+
+    pid {
+      # cat=plugin.tx_mdfullcalendar_cal/settings/pid/defaultDetailPid; type=int+; label=The Id of the page, where the detail view of an item is shown. On this page you have to insert the plugin `
+      defaultDetailPid =
     }
 
-    persistence {
-        # cat=plugin.tx_mdfullcalendar_cal//a; type=string; label=Default storage PID
-        storagePid =
-    }
-
-    settings {
-        # cat=plugin.tx_mdfullcalendar_cal/settings/dateFormat; type=string; label=The format of the dates.
-        dateFormat = d.m.Y
-
-        # cat=plugin.tx_mdfullcalendar_cal/settings/timeFormat; type=string; label=The format of the time.
-        timeFormat = H:i
-
-        pid {
-            # cat=plugin.tx_mdfullcalendar_cal/settings/pid/defaultDetailPid; type=int+; label=The Id of the page, where the detail view of an item is shown. On this page you have to insert the plugin `
-            defaultDetailPid =
-        }
-
-        # cat=plugin.tx_mdfullcalendar_cal/settings/timeFormat; type=boolean; label=Show the Ical download button. if you enable this, make sure that you have set "defaultDetailPid" and there is an ext:calendarize plugin inserted on that page.
-        showIcsIcalButton = 0
-    }
+    # cat=plugin.tx_mdfullcalendar_cal/settings/timeFormat; type=boolean; label=Show the Ical download button. if you enable this, make sure that you have set "defaultDetailPid" and there is an ext:calendarize plugin inserted on that page.
+    showIcsIcalButton = 0
+  }
 }

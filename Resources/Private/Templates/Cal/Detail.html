@@ -10,7 +10,7 @@
                 <h2 class="modal-title" id="calModalLabel">
                     {index.originalObject.title}
                 </h2>
-                <button type="button" class="btn-close close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="{f:translate(key: 'close', extensionName: 'MdFullcalendar')}"></button>
+                <button type="button" class="btn-close close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="{f:translate(key: 'close', extensionName: 'MdFullcalendar')}"></button>
             </div>
             <div class="modal-body">
                 <h3 class="state-{index.state}">
@@ -99,7 +99,7 @@
                 </f:if>
 
                 <f:if condition="{event.bookable}">
-                    <c:link.booking index="{index}" class="btn btn-default btn-primary">
+                    <c:link.booking index="{index}" class="btn btn-primary">
                         <f:translate key="booking"/>
                         <span class="glyphicon glyphicon-arrow-right"></span>
                     </c:link.booking>

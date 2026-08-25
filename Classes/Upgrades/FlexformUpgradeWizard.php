@@ -49,7 +49,7 @@ final class FlexformUpgradeWizard implements UpgradeWizardInterface
             ->getQueryBuilderForTable('tt_content');
 
         $queryBuilder->getRestrictions()->removeAll();
-        $res = (int)$queryBuilder->count('uid')
+        $count = $queryBuilder->count('uid')
             ->from('tt_content')
             ->where(
                 $queryBuilder->expr()->and(
@@ -59,7 +59,11 @@ final class FlexformUpgradeWizard implements UpgradeWizardInterface
             )
             ->executeQuery()->fetchOne();
 
-        return $res > 0;
+        if (!is_int($count) && !is_string($count)) {
+            return false;
+        }
+
+        return (int)$count > 0;
     }
 
     /**
@@ -107,6 +111,6 @@ final class FlexformUpgradeWizard implements UpgradeWizardInterface
      */
     public function getPrerequisites(): array
     {
-        // Add your logic here
+        return [];
     }
 }

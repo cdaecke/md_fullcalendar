@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use Mediadreams\MdFullcalendar\Domain\Model\Category;
+
 return [
-    \Mediadreams\MdFullcalendar\Domain\Model\Category::class => [
+    Category::class => [
         'tableName' => 'sys_category',
     ],
 ];

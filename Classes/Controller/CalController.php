@@ -4,71 +4,58 @@ declare(strict_types=1);
 
 namespace Mediadreams\MdFullcalendar\Controller;
 
-/***
- *
- * This file is part of the "FullCalendar.io for ext:Calendarize" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- *  (c) 2019 Christoph Daecke
- *
- ***/
-
+use HDNET\Calendarize\Domain\Model\Index;
 use HDNET\Calendarize\Domain\Repository\IndexRepository;
 use Mediadreams\MdFullcalendar\Domain\Repository\CategoryRepository;
+use Mediadreams\MdFullcalendar\Service\EventCollectionBuilder;
+use Mediadreams\MdFullcalendar\Service\EventQueryParser;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Page\AssetCollector;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-/**
- * CalController
- */
-class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class CalController extends ActionController
 {
-    /**
-     * CalController constructor
-     *
-     * @param IndexRepository $indexRepository
-     * @param CategoryRepository $categoryRepository
-     */
     public function __construct(
-        protected IndexRepository $indexRepository,
-        protected CategoryRepository $categoryRepository,
-        protected AssetCollector $assetCollector,
-    ) {
-    }
+        private readonly IndexRepository $indexRepository,
+        private readonly CategoryRepository $categoryRepository,
+        private readonly AssetCollector $assetCollector,
+        private readonly EventQueryParser $eventQueryParser,
+        private readonly EventCollectionBuilder $eventCollectionBuilder,
+    ) {}
 
-    /**
-     * Show the calendar
-     *
-     * @return ResponseInterface
-     */
     public function showAction(): ResponseInterface
     {
         $this->assetCollector->addJavaScript(
             'md_fullcalendar_lib',
-            'EXT:md_fullcalendar/Resources/Public/fullcalendar/dist/index.global.min.js'
+            'EXT:md_fullcalendar/Resources/Public/fullcalendar/dist/index.global.min.js',
         );
 
-        if (!empty($this->settings['language'])) {
+        $language = filter_var(
+            $this->settings['language'] ?? null,
+            FILTER_VALIDATE_REGEXP,
+            ['options' => ['regexp' => '/\A[a-z]{2,3}(?:-[a-z]{2})?\z/D']],
+        );
+        if (is_string($language)) {
             $this->assetCollector->addJavaScript(
                 'md_fullcalendar_locales',
-                'EXT:md_fullcalendar/Resources/Public/fullcalendar/packages/core/locales/' . $this->settings['language'] . '.global.js'
+                'EXT:md_fullcalendar/Resources/Public/fullcalendar/packages/core/locales/' . $language . '.global.js',
             );
         }
 
-        if (!empty($this->settings['category'])) {
-            $allCategories = $this->categoryRepository->findByParent($this->settings['category']);
-            $this->view->assign('categories', $allCategories);
+        $categoryUid = (int)($this->settings['category'] ?? 0);
+        if ($categoryUid > 0) {
+            $this->view->assign('categories', $this->categoryRepository->findBy(['parent' => $categoryUid]));
         }
 
         // pass storagePid to template in order to use it in ajax call listAction()
-        $contentObject = $this->request->getAttribute('currentContentObject')->data;
+        $contentObjectRenderer = $this->request->getAttribute('currentContentObject');
+        $contentObject = $contentObjectRenderer instanceof ContentObjectRenderer
+            ? $contentObjectRenderer->data
+            : [];
 
-        $storagePid = $contentObject['pages'];
-        if ($storagePid) {
+        $storagePid = $contentObject['pages'] ?? '';
+        if (is_string($storagePid) && $storagePid !== '') {
             $this->view->assign('storagePid', $storagePid);
         }
 
@@ -77,152 +64,54 @@ class CalController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         return $this->htmlResponse();
     }
 
-    /**
-     * Get list of events
-     * If "type" is provided, it will return values as json object
-     *
-     * @return ResponseInterface
-     */
     public function listAction(): ResponseInterface
     {
-        $params = $this->request->getQueryParams();
+        $requestBody = $this->request->getParsedBody();
+        $parameters = array_replace(
+            $this->request->getQueryParams(),
+            is_array($requestBody) ? $requestBody : [],
+        );
 
-        $type = $params['type'];
-        $storagePid = $params['storage'];
-
-        // set start day -1 in order to get all events for selected time span
-        $selectedStart = new \DateTime($_REQUEST['start']);
-        $selectedStart = $selectedStart
-            ->modify('-1 day')
-            ->setTime(00, 00, 00);
-
-        // set end day +1 in order to get all events for selected time span
-        $selectedEnd = new \DateTime($_REQUEST['end']);
-        $selectedEnd = $selectedEnd
-            ->modify('+1 day')
-            ->setTime(23, 59, 59);
-
-        // Limit the timespan between start and end date to max 50 days in order to prevent Denial of Service attacks
-        $daysTimespan = $selectedStart->diff($selectedEnd);
-        if ($daysTimespan->format('%a') >= 50) {
-            $selectedEnd = clone $selectedStart;
-            $selectedEnd = $selectedEnd->modify("+50 days");
+        try {
+            $eventQuery = $this->eventQueryParser->parse($parameters);
+        } catch (\InvalidArgumentException) {
+            return $this->jsonResponse(
+                json_encode(['error' => 'Invalid event query.'], JSON_THROW_ON_ERROR),
+            )->withStatus(400);
         }
 
-        if (!empty($storagePid)) {
-            // sanitize input
-            $storagePid = GeneralUtility::intExplode(',', $storagePid, true);
-            $storagePid = implode(',', $storagePid);
-
-            // set storagePid
-            $this->configurationManager->setConfiguration(
-                [
-                    'persistence' => [
-                        'storagePid' => $storagePid
-                    ],
-                ]
+        $type = $parameters['type'] ?? null;
+        if ($type === 1573738558 || $type === '1573738558') {
+            $items = $this->eventCollectionBuilder->build(
+                $eventQuery->start,
+                $eventQuery->end,
+                $this->uriBuilder,
+                $this->getDetailPid(),
+                $eventQuery->storagePageIds,
             );
+
+            return $this->jsonResponse(json_encode($items, JSON_THROW_ON_ERROR));
         }
 
-        $search = $this->indexRepository->findByTimeSlot($selectedStart, $selectedEnd);
-
-        if ($type == 1573738558) {
-            $items = [];
-            $i = 0;
-            /** @var \HDNET\Calendarize\Domain\Model\Index $el */
-            foreach ($search as $el) {
-                if ($el->getUniqueRegisterKey() === 'Event' || $el->getUniqueRegisterKey() === 'News') {
-                    $uri = $this->uriBuilder
-                        ->reset()
-                        ->setTargetPageUid((int)$this->settings['pid']['defaultDetailPid'])
-                        ->uriFor(
-                            'detail',
-                            ['index' => $el->getUid()],
-                            'Calendar',
-                            'calendarize',
-                            'calendar'
-                        );
-
-                    $uriAjax = $this->uriBuilder
-                        ->reset()
-                        ->setTargetPageUid((int)$this->settings['pid']['defaultDetailPid'])
-                        ->setTargetPageType(1573760945)
-                        ->uriFor(
-                            'detail',
-                            ['index' => $el->getUid()],
-                            'Cal',
-                            'mdfullcalendar',
-                            'caldetail'
-                        );
-
-                    if ($el->isAllDay()) {
-                        $start = $el->getStartDateComplete()->format('Y-m-d');
-                        $end = $el->getEndDateComplete()->modify('+1 day')->format('Y-m-d');
-                    } else {
-                        $start = $el->getStartDateComplete()->format('c');
-                        $end = $el->getEndDateComplete()->format('c');
-                    }
-
-                    $items[$i] = [
-                        'id' => $el->getUid(),
-                        'title' => $el->getOriginalObject()->getTitle(),
-                        'description' => $el->getOriginalObject()->getDescription(),
-                        'start' => $start,
-                        'end' => $end,
-                        'allDay' => $el->isAllDay(),
-                        'className' => 'cal-item' . $this->getCssClasses($el->getOriginalObject()->getCategories()),
-                        'url' => $uri,
-                        'uriAjax' => $uriAjax,
-                    ];
-
-                    if ($el->getUniqueRegisterKey() === 'News') {
-                        $items[$i]['abstract'] = $el->getOriginalObject()->getTeaser();
-                    } else {
-                        $items[$i]['abstract'] = $el->getOriginalObject()->getAbstract();
-                        $items[$i]['location'] = $el->getOriginalObject()->getLocation();
-                        $items[$i]['locationLink'] = $el->getOriginalObject()->getLocationLink();
-                        $items[$i]['organizer'] = $el->getOriginalObject()->getOrganizer();
-                        $items[$i]['organizerLink'] = $el->getOriginalObject()->getOrganizerLink();
-                    }
-
-                    $i++;
-                }
-            }
-
-            return $this->jsonResponse(json_encode($items));
-        } else {
-            $this->view->assign('index', $search);
-        }
+        $this->indexRepository->setOverridePageIds($eventQuery->storagePageIds);
+        $this->view->assign('index', $this->indexRepository->findByTimeSlot($eventQuery->start, $eventQuery->end));
 
         return $this->htmlResponse();
     }
 
-    /**
-     * Get one event
-     *
-     * @param \HDNET\Calendarize\Domain\Model\Index $index
-     * @return ResponseInterface
-     */
-    public function detailAction(\HDNET\Calendarize\Domain\Model\Index $index): ResponseInterface
+    public function detailAction(Index $index): ResponseInterface
     {
         $this->view->assign('index', $index);
+
         return $this->htmlResponse();
     }
 
-    /**
-     * This function returns a string with all CSS classes of an item
-     *
-     * @param ObjectStorage $categories The ObjectStorage with the categories
-     * @return string
-     */
-    protected function getCssClasses(ObjectStorage $categories): string
+    private function getDetailPid(): int
     {
-        $cssClasses = '';
+        $pidSettings = $this->settings['pid'] ?? [];
+        $detailPid = is_array($pidSettings) ? ($pidSettings['defaultDetailPid'] ?? null) : null;
+        $validatedDetailPid = filter_var($detailPid, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
 
-        foreach ($categories as $category) {
-            $cssClasses .= ' category' . $category->getUid();
-        }
-
-        return $cssClasses;
+        return is_int($validatedDetailPid) ? $validatedDetailPid : 0;
     }
 }

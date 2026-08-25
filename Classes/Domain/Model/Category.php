@@ -19,7 +19,4 @@ namespace Mediadreams\MdFullcalendar\Domain\Model;
  * Category
  * This is needed, because we use our own CategoryRepository
  */
-class Category extends \TYPO3\CMS\Extbase\Domain\Model\Category
-{
-
-}
+class Category extends \TYPO3\CMS\Extbase\Domain\Model\Category {}

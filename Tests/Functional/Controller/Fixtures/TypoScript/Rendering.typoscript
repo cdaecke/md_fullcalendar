@@ -1,0 +1,13 @@
+page = PAGE
+page {
+  10 = USER_INT
+  10 {
+    userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+    extensionName = MdFullcalendar
+    pluginName = Cal
+    vendorName = Mediadreams
+
+    settings < plugin.tx_mdfullcalendar_cal.settings
+    persistence.storagePid < plugin.tx_mdfullcalendar_cal.persistence.storagePid
+  }
+}

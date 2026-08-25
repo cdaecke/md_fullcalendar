@@ -1,0 +1,4 @@
+name: mediadreams/md_fullcalendar
+label: 'FullCalendar.io for ext:Calendarize'
+dependencies:
+  - lochmueller/calendarize
